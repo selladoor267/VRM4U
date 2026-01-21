@@ -10,7 +10,7 @@
 UVrmAssetListObject::UVrmAssetListObject(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
-	Package = GetTransientPackage();
+	RootPackagePath = GetTransientPackage()->GetName();
 
 	//Result = new FReturnedData();
 }
@@ -61,11 +61,41 @@ void UVrmAssetListObject::CopyMember(UVrmAssetListObject *dst) const {
 	dst->Textures = Textures;
 	dst->Materials = Materials;
 	dst->HumanoidRig = HumanoidRig;
-	dst->Package = Package;
+	dst->RootPackagePath = RootPackagePath;
 	dst->FileFullPathName = FileFullPathName;
 	dst->OrigFileName = OrigFileName;
 	dst->BaseFileName = BaseFileName;
 	dst->HumanoidSkeletalMesh = HumanoidSkeletalMesh;
+}
+
+UPackage* UVrmAssetListObject::GetPackage() const
+{
+	if (RootPackagePath.IsEmpty())
+	{
+		return nullptr;
+	}
+
+	if (UPackage* existingPackage = FindPackage(nullptr, *RootPackagePath))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Existing"));
+		return existingPackage;
+	}
+
+	UPackage* newPackage = CreatePackage(*RootPackagePath);
+	newPackage->FullyLoad();
+
+	return newPackage;
+}
+
+void UVrmAssetListObject::SetPackage(UPackage* package)
+{
+	if (!package)
+	{
+		RootPackagePath.Reset();
+		return;
+	}
+
+	RootPackagePath = package->GetName();
 }
 
 #if WITH_EDITOR

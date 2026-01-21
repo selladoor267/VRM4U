@@ -32,6 +32,9 @@ public:
 
 	void CopyMember(UVrmAssetListObject *dst) const;
 
+	UPackage* GetPackage() const;
+	void SetPackage(UPackage* package);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InOption")
 	bool bAssetSave = false;
 
@@ -198,8 +201,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Out")
 	TArray<EVRMImportTextureCompressType> Texture_CompressTypeList;
 
-	UPROPERTY()
-	UPackage *Package;
+	UPROPERTY(EditAnywhere)
+	FString RootPackagePath;
 
 	UPROPERTY()
 	UVrmAssetListObject* ReimportBase;
